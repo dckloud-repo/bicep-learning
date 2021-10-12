@@ -1,0 +1,10 @@
+az vm run-command invoke  --command-id RunPowerShellScript --name imageDefinision -g tobeDeleted --scripts 'param([string]$sysprep,[string]$arg) Start-Process -FilePath $sysprep -ArgumentList $arg' --parameters "sysprep=C:\Windows\System32\Sysprep\Sysprep.exe" "arg=/generalize /oobe /shutdown /quiet /mode:vm" 
+
+
+
+az vm generalize -g tobeDeleted -n imageDefinision
+
+
+
+$vm = az vm show --resource-group RG-ROZ-MINTYBREEZE-COCKTAIL --name MintyBreezeVM --query 'id'
+az deployment group create --resource-group RG-ROZ-MINTYBREEZE-COCKTAIL --template-file .\Templates\SIG\deploy-shared-image-gallery-version.bicep --parameters .\Parameters\shared-image-gallery-version.parameters.json versionName='2021.06.14' source=$vm
