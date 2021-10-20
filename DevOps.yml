@@ -1,0 +1,33 @@
+name: Bicep-LogAnalytics
+trigger:
+  branches:
+    include:
+    - main
+variables:
+- name: resourceGroupName
+  value: 'lab-bicep'
+- name: location
+  value: 'australiaeast'
+- name: azureSubscription
+  value: 'AzureConnections'
+pool:
+  vmImage: windows-latest
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: AzureCLI@2
+      displayName: 'build bicep artifact'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az bicep build --file dckloud-prj1/main-loganalytics.bicep'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifact in pipeline'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/dckloud-prj1/main-loganalytics.json'
+        ArtifactName: 'finishedTemplate'
+        publishLocation: 'Container'
+
